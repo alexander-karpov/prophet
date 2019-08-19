@@ -8,11 +8,11 @@
 // {
 //     [ApiController]
 //     [Route("[controller]")]
-//     public class ArticleController : ControllerBase
+//     public class FeedController : ControllerBase
 //     {
 //         readonly AddFeedOperation _addFeedOperation;
 
-//         public ArticleController(AddFeedOperation addFeedOperation)
+//         public FeedController(AddFeedOperation addFeedOperation)
 //         {
 //             _addFeedOperation = addFeedOperation;
 //         }

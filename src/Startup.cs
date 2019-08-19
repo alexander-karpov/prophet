@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Prophet.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Prophet.Entities;
 using Prophet.Operations;
+using Prophet.ReadModel;
 
 namespace Prophet
 {
@@ -39,14 +32,23 @@ namespace Prophet
 
             services.AddTransient<VK.OpenApi.VkOpenApiClient>();
             services.AddSingleton<IJsonSerializer, SnakeCaseJsonSerializer>();
-            services.AddTransient<ReadModel>();
 
             services.AddTransient<Mirgation>();
-            services.AddTransient<PullArticleOperation>();
+            //
+            // services.AddTransient<AddFeedOperation>();
 
+            /* Entity Operations */
             services.AddTransient<ReadNewsEntityOperation>();
             services.AddTransient<CreateUserEntityOperation>();
             services.AddTransient<SaveArticleEntityOperation>();
+
+            /* Operations */
+            services.AddTransient<СomebackOperation>();
+            services.AddTransient<WelcomeOperation>();
+
+            /* Read Models */
+            services.AddTransient<UserReadModel>();
+            services.AddTransient<ArticleReadModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
