@@ -1,9 +1,11 @@
 #!/bin/sh
-rm -rf ./dist \
-&& dotnet publish \
-    --runtime linux-x64 \
+dotnet publish \
+    --runtime linux-musl-x64 \
     -c Release \
-    --self-contained \
-    --output ./dist \
-    --nologo \
-&& scp -r ./dist/* dialogs:/home/dialogs/bin/prophet
+    --no-self-contained \
+&& docker build \
+    --tag=prophet \
+    --file=./Dockerfile \
+    ./bin/Release/netcoreapp3.0/linux-musl-x64/publish \
+&& docker tag prophet alexanderkarpov/prophet \
+&& docker push alexanderkarpov/prophet
