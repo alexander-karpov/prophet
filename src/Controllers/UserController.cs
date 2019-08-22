@@ -8,7 +8,7 @@ using Prophet.Operations;
 namespace Prophet.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api")]
     public class UserController : ControllerBase
     {
         readonly WelcomeOperation _welcomeOperation;
@@ -23,17 +23,22 @@ namespace Prophet.Controllers
             _welcomeOperation = welcomeOperation;
         }
 
-        [HttpGet("{userId}")]
-        public ComebackResponse Get(string userId)
+        [HttpGet("comeback/{userId}")]
+        public ActionResult<ComebackResponse> Comeback(string userId)
         {
+            if (!_comebackOperation.IsСomeback(userId))
+            {
+                return NotFound($"Пользователь {userId} не найден");
+            }
+
             return new ComebackResponse
             {
-                IsComeback = _comebackOperation.IsСomeback(userId)
+                Article = "Любопытной варваре на базаре нос оторвали"
             };
         }
 
-        [HttpPost]
-        public ActionResult<string> Post([FromBody] WelcomeRequest request)
+        [HttpPost("welcome")]
+        public ActionResult<string> Welcome([FromBody] WelcomeRequest request)
         {
             try
             {

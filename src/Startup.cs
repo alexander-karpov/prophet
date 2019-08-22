@@ -25,10 +25,9 @@ namespace Prophet
             services.AddControllers();
             services.AddHttpClient();
 
-            services.AddEntityFrameworkNpgsql()
-                  .AddDbContext<ProphetContext>(
-                      options => options.UseNpgsql(_config.GetConnectionString("prophet"))
-                  );
+            services.AddDbContext<ProphetContext>(
+                options => options.UseSqlite(_config.GetConnectionString("prophet"))
+            );
 
             services.AddTransient<VK.OpenApi.VkOpenApiClient>();
             services.AddSingleton<IJsonSerializer, SnakeCaseJsonSerializer>();
