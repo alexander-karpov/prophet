@@ -16,7 +16,7 @@ namespace Prophet
             _db = db;
         }
 
-        public Maybe<Article> FreshArticle(User userId)
+        public Maybe<Article> NextArticle(User userId)
         {
             var freshArticles = from userFeed in _db.UserFeeds
                                 join feed in _db.Feeds on userFeed.FeedId equals feed.FeedId

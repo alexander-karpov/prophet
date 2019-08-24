@@ -1,4 +1,6 @@
 using System.Linq;
+using Prophet.Entities;
+using static Prophet.Prelude;
 
 namespace Prophet.ReadModel
 {
@@ -11,9 +13,16 @@ namespace Prophet.ReadModel
             _db = db;
         }
 
-        public bool IsUserExists(string userId)
+        public bool IsExists(string userId)
         {
             return _db.Users.Where(u => u.UserId == userId).Count() == 1;
+        }
+
+        public Maybe<User> ById(string userId)
+        {
+            return Maybe(
+                _db.Users.Where(u => u.UserId == userId).FirstOrDefault()
+            );
         }
     }
 }

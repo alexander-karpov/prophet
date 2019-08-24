@@ -1,4 +1,6 @@
-namespace Prophet.Entities
+using Prophet.Entities;
+
+namespace Prophet.EntityOperations
 {
     public class SaveArticleEntityOperation
     {

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Prophet.Entities;
 using Prophet.Operations;
 using Prophet.ReadModel;
+using Prophet.EntityOperations;
 
 namespace Prophet
 {
@@ -42,8 +42,7 @@ namespace Prophet
             services.AddTransient<SaveArticleEntityOperation>();
 
             /* Operations */
-            services.AddTransient<СomebackOperation>();
-            services.AddTransient<WelcomeOperation>();
+            services.AddTransient<StartOperation>();
 
             /* Read Models */
             services.AddTransient<UserReadModel>();
@@ -58,7 +57,6 @@ namespace Prophet
         {
             migration.Migrate();
 
-            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
