@@ -14,20 +14,14 @@ namespace Prophet.Controllers
         {
             _startOperation = startOperation;
         }
-        public StartResponse Post(WebhookRequest request)
+        public ActionResult<StartResponse> Post(WebhookRequest request)
         {
+            var result = _startOperation.Start(request.UserId);
+
             return _startOperation.Start(request.UserId) switch
             {
-                Newcomer _ => new StartResponse
-                {
-                    IsNew = true
-                },
-
-                UserWaitArticle _ => new StartResponse
-                {
-                    IsNew = false
-                },
-
+                Newcomer _ => new StartResponse { IsNew = true },
+                UserWaitArticle _ => new StartResponse { IsNew = false },
                 UserHasArticle u => new StartResponse
                 {
                     IsNew = false,
@@ -35,10 +29,7 @@ namespace Prophet.Controllers
                     ArticleText = u.Article.Text
                 },
 
-                _ => new StartResponse
-                {
-                    IsNew = false
-                }
+                _ => new StartResponse { IsNew = false }
             };
         }
     }
