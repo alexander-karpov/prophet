@@ -1,5 +1,7 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Prophet.Dto;
+using Prophet.Exceptions;
 using Prophet.Operations;
 
 namespace Prophet.Controllers
@@ -28,8 +30,7 @@ namespace Prophet.Controllers
                     ArticleAuthor = "Дмитрий Емец",
                     ArticleText = u.Article.Text
                 },
-
-                _ => new StartResponse { IsNew = false }
+                _ => throw new UnexpectedResult(nameof(StartOperation))
             };
         }
     }
