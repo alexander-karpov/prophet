@@ -18,8 +18,6 @@ namespace Prophet.Controllers
         }
         public ActionResult<StartResponse> Post(WebhookRequest request)
         {
-            var result = _startOperation.Start(request.UserId);
-
             return _startOperation.Start(request.UserId) switch
             {
                 Newcomer _ => new StartResponse { IsNew = true },
