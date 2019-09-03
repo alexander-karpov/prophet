@@ -16,6 +16,14 @@ namespace Prophet.Controllers
         {
             _startOperation = startOperation;
         }
+
+        [HttpGet]
+        public ActionResult Get()
+        {
+            return Ok("200 KO");
+        }
+
+        [HttpPost]
         public ActionResult<StartResponse> Post(WebhookRequest request)
         {
             return _startOperation.Start(request.UserId) switch
