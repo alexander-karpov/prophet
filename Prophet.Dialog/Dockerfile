@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY . /app
 
-CMD ["/app/Prophet"]
+CMD ["/app/ProphetDialog"]

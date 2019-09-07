@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Prophet.Dialog.Operations;
 
 namespace Prophet.Dialog
 {
@@ -9,6 +10,8 @@ namespace Prophet.Dialog
         {
             services.AddControllers();
             services.AddHttpClient();
+
+            services.AddSingleton<DequeueOperation>();
         }
 
         public void Configure(IApplicationBuilder app)
