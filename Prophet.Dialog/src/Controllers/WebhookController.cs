@@ -20,7 +20,7 @@ namespace Prophet.Dialog.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            return Ok("200 KO");
+            return Ok("200 OK");
         }
 
         [HttpPost]
