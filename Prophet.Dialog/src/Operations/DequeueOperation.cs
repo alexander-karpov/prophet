@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using RabbitMQ.Client;
 using static Prophet.Prelude;
@@ -19,11 +20,16 @@ namespace Prophet.Dialog.Operations
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
+            var args = new Dictionary<string, object>();
+            var week = 1000 * 60 * 60 * 24 * 7;
+            args.Add("x-message-ttl", week);
+
             channel.QueueDeclare(
                 queue: queueName,
                 durable: true,
                 exclusive: false,
-                autoDelete: false
+                autoDelete: false,
+                arguments: args
             );
 
             var message = channel.BasicGet(queue: queueName, autoAck: true);
