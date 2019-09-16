@@ -6,7 +6,7 @@ namespace Prophet.VkJournalist
 {
     public class Context : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<Owner> Owners { get; set; }
 
         public DbSet<PublishedPost> PublishedPosts { get; set; }
 

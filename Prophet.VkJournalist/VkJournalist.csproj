@@ -10,4 +10,8 @@
     <PackageReference Include="RabbitMQ.Client" Version="5.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Prophet\Prophet.csproj" />
+  </ItemGroup>
+
 </Project>

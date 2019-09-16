@@ -9,16 +9,23 @@ namespace Prophet.VkJournalist
 {
     class Journalist : IDisposable
     {
+        const string POSTS_EXCHANGE = "posts";
+
+        // TODO: Переделать на запрос до нех пор,
+        // пока не считаем все новые сообщения
+        const int FETCH_POSTS_COUNT = 32;
+
         readonly VkService _vk = new VkService();
         readonly Context _ctx = new Context();
         readonly Timer _timer;
 
-        const string ARTICLES_EXCHANGE = "articles";
+        readonly OwnersSequence _owners;
 
         public Journalist()
         {
             _ctx.Database.EnsureCreated();
-            _timer = new Timer(PullUpdates, null, 0, 10000);
+            _owners = new OwnersSequence(_ctx.Owners);
+            _timer = new Timer(PullUpdates, null, 10000, 10000);
         }
 
         public void WatchAndPublish()
@@ -36,41 +43,46 @@ namespace Prophet.VkJournalist
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: ARTICLES_EXCHANGE, type: "direct");
+            channel.ExchangeDeclare(exchange: POSTS_EXCHANGE, type: "direct");
 
             var body = Encoding.UTF8.GetBytes("message");
 
             var props = channel.CreateBasicProperties();
             props.Persistent = true;
 
-            channel.BasicPublish(exchange: ARTICLES_EXCHANGE,
+            channel.BasicPublish(exchange: POSTS_EXCHANGE,
                                  routingKey: $"vk/{userId}",
                                  basicProperties: props,
                                  body: body);
         }
 
-        public async void PullUpdates(object state)
+        async void PullUpdates(object state)
         {
-            var userId = "41946361";
-
-            Console.WriteLine("Pull updates…");
-            var posts = await _vk.WallGet(ownerId: userId, count: 3, offset: 0);
-            var notPublished = posts.Where(p => !_ctx.IsPublished(p));
-
-            foreach (var post in notPublished.OrderBy(p => p.Date))
+            if (_owners.Next() is Just<Owner> owner)
             {
-                Publish(post);
-                _ctx.MarkAsPublished(post);
+                var posts = await _vk.WallGet(
+                    ownerId: owner.Value.Id,
+                    count: FETCH_POSTS_COUNT,
+                    offset: 0);
+
+                var notPublished = posts.Where(p => !_ctx.IsPublished(p));
+
+                foreach (var post in notPublished.OrderBy(p => p.Date))
+                {
+                    Publish(post);
+                    _ctx.MarkAsPublished(post);
+                }
             }
         }
 
-        public void Publish(Post post)
+        void Publish(Post post)
         {
             Console.WriteLine("Publishing… " + post.Text);
         }
 
         public void Dispose()
         {
+            _timer.Dispose();
             _ctx.Dispose();
         }
     }

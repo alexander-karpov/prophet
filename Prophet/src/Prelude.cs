@@ -1,6 +1,6 @@
 namespace Prophet
 {
-    static class Prelude
+    public static class Prelude
     {
         public static Maybe<A> Maybe<A>(A value)
         {
