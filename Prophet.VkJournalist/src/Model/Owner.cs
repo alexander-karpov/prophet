@@ -2,6 +2,6 @@ namespace Prophet.VkJournalist.Model
 {
     public class Owner
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Prophet.VkJournalist.Model;
 
 namespace Prophet.VkJournalist
 {
-    public class Context : DbContext
+    public class JournalistContext : DbContext
     {
         public DbSet<Owner> Owners { get; set; }
 
@@ -18,6 +18,17 @@ namespace Prophet.VkJournalist
         public void MarkAsPublished(Post post)
         {
             PublishedPosts.Add(new PublishedPost { Id = PostPublishMark(post) });
+            SaveChanges();
+        }
+
+        public void EnsureOwner(string id)
+        {
+            if (Owners.Count(owner => owner.Id == id) != 0)
+            {
+                return;
+            }
+
+            Owners.Add(new Owner { Id = id });
             SaveChanges();
         }
 
