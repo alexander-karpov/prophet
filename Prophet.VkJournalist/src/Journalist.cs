@@ -16,8 +16,8 @@ namespace Prophet.VkJournalist
 
         readonly VkService _vk = new VkService();
         readonly JournalistContext _ctx = new JournalistContext();
+        readonly MessageQueue _mq = new MessageQueue();
         readonly Timer _timer;
-
         readonly OwnersSequence _owners;
 
         public Journalist()
@@ -33,21 +33,10 @@ namespace Prophet.VkJournalist
             _timer = new Timer(PullUpdates, null, 10000, 10000);
         }
 
-        public void WatchAndPublish()
-        {
-            var userId = "41946361";
-
-
-
-
-        }
-
         async void PullUpdates(object _)
         {
             if (_owners.Next() is Just<Owner> owner)
             {
-                Console.WriteLine("Pull " + owner.Value.Id);
-
                 var posts = await _vk.WallGet(
                     ownerId: owner.Value.Id,
                     count: FETCH_POSTS_COUNT,
@@ -65,13 +54,16 @@ namespace Prophet.VkJournalist
 
         void Publish(Post post)
         {
-            Console.WriteLine("Publishing… " + post.Text);
+            _mq.PublishPost(
+                message: $"Источник {post.OwnerId}: {post.Text}",
+                routingKey: $"vk/{post.OwnerId}");
         }
 
         public void Dispose()
         {
             _timer.Dispose();
             _ctx.Dispose();
+            _mq.Dispose();
         }
     }
 }

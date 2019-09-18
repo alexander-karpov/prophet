@@ -8,7 +8,7 @@ namespace Prophet
 {
     public class MessageQueue : IDisposable
     {
-        const string POSTS_EXCHANGE = "";
+        const string POSTS_EXCHANGE = "posts";
 
         IConnection _connection;
         IModel _channel;
@@ -44,7 +44,15 @@ namespace Prophet
             );
         }
 
-        public void Publish(string message, string routingKey)
+        public void SubscribeToPosts(string queue, string routingKey)
+        {
+            _channel.QueueBind(
+                queue: queue,
+                exchange: POSTS_EXCHANGE,
+                routingKey: routingKey);
+        }
+
+        public void PublishPost(string message, string routingKey)
         {
             var body = Encoding.UTF8.GetBytes(message);
 

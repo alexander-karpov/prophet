@@ -12,6 +12,7 @@ namespace Prophet.Dialog
             services.AddHttpClient();
 
             services.AddSingleton<DequeueOperation>();
+            services.AddSingleton<SubscribeOperation>();
         }
 
         public void Configure(IApplicationBuilder app)
