@@ -30,24 +30,31 @@ namespace Prophet.VkJournalist
             _ctx.EnsureOwner("1152487"); // Владимир Киняйкин
 
             _owners = new OwnersSequence(_ctx.Owners);
-            _timer = new Timer(PullUpdates, null, 10000, 10000);
+            _timer = new Timer(PullAndPublishUpdates, null, 10000, 10000);
         }
 
-        async void PullUpdates(object _)
+        async void PullAndPublishUpdates(object _)
         {
             if (_owners.Next() is Just<Owner> owner)
             {
-                var posts = await _vk.WallGet(
+                try
+                {
+                    var posts = await _vk.WallGet(
                     ownerId: owner.Value.Id,
                     count: FETCH_POSTS_COUNT,
                     offset: 0);
 
-                var notPublished = posts.Where(p => !_ctx.IsPublished(p));
+                    var notPublished = posts.Where(p => !_ctx.IsPublished(p));
 
-                foreach (var post in notPublished.OrderBy(p => p.Date))
+                    foreach (var post in notPublished.OrderBy(p => p.Date))
+                    {
+                        Publish(post);
+                        _ctx.MarkAsPublished(post);
+                    }
+                }
+                catch (Exception e)
                 {
-                    Publish(post);
-                    _ctx.MarkAsPublished(post);
+                    Console.Error.WriteLine($"{nameof(this.PullAndPublishUpdates)} failed. ${e.Message}");
                 }
             }
         }
