@@ -32,6 +32,7 @@ namespace Prophet.Dialog.Controllers
             _subscribeOperation.Subscribe(req.Session.UserId, "2222944"); // Андрей Ромашко
             _subscribeOperation.Subscribe(req.Session.UserId, "19458733"); // Степан Берёзкин
             _subscribeOperation.Subscribe(req.Session.UserId, "1152487"); // Владимир Киняйкин
+            _subscribeOperation.Subscribe(req.Session.UserId, "562314067"); // Я
 
             var message = _dequeueOperation.Dequeue(req.Session.UserId) switch
             {

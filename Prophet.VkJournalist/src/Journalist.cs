@@ -1,8 +1,7 @@
 using System;
-using System.Text;
-using System.Threading;
 using System.Linq;
 using Prophet.VkJournalist.Model;
+using System.Threading.Tasks;
 
 namespace Prophet.VkJournalist
 {
@@ -17,8 +16,13 @@ namespace Prophet.VkJournalist
         readonly VkService _vk = new VkService();
         readonly JournalistContext _ctx = new JournalistContext();
         readonly MessageQueue _mq = new MessageQueue();
-        readonly Timer _timer;
-        readonly OwnersSequence _owners;
+        readonly RoundRobinSequence<Owner> _owners;
+        readonly RoundRobinSequence<string> _apiKeys = new RoundRobinSequence<string>(
+            new[] {
+                "f575f5e3f575f5e3f575f5e3a5f51e6cecff575f575f5e3a8f0f1e74c639563bffd1f9f", // Ежедневный пророк
+                "5652e91a5652e91a5652e91a3e563e12dc556525652e91a0bd7e3e9eae7a43eaf3e5818" //Помощник ежедневного пророка
+            }
+        );
 
         public Journalist()
         {
@@ -28,18 +32,22 @@ namespace Prophet.VkJournalist
             _ctx.EnsureOwner("2222944"); // Андрей Ромашко
             _ctx.EnsureOwner("19458733"); // Степан Берёзкин
             _ctx.EnsureOwner("1152487"); // Владимир Киняйкин
+            _ctx.EnsureOwner("562314067"); // Я
 
-            _owners = new OwnersSequence(_ctx.Owners);
-            _timer = new Timer(PullAndPublishUpdates, null, 10000, 10000);
+            _owners = new RoundRobinSequence<Owner>(_ctx.Owners);
         }
 
-        async void PullAndPublishUpdates(object _)
+        public async Task PullAndPublishUpdates(object _)
         {
-            if (_owners.Next() is Just<Owner> owner)
+            if (
+                _owners.Next() is Just<Owner> owner &&
+                _apiKeys.Next() is Just<string> key
+            )
             {
                 try
                 {
                     var posts = await _vk.WallGet(
+                    apiKey: key,
                     ownerId: owner.Value.Id,
                     count: FETCH_POSTS_COUNT,
                     offset: 0);
@@ -68,7 +76,6 @@ namespace Prophet.VkJournalist
 
         public void Dispose()
         {
-            _timer.Dispose();
             _ctx.Dispose();
             _mq.Dispose();
         }

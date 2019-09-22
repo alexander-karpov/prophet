@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Prophet.VkJournalist
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var cancelEvent = new AutoResetEvent(initialState: false);
             using var journalist = new Journalist();
+            var cancellationSource = new CancellationTokenSource();
+            var token = cancellationSource.Token;
 
             Console.WriteLine("Application started. Press Ctrl+C to shut down.");
+            Console.CancelKeyPress += (s, e) => cancellationSource.Cancel();
 
-            Console.CancelKeyPress += (s, e) => cancelEvent.Set();
-            cancelEvent.WaitOne();
+            await Task.Run(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await journalist.PullAndPublishUpdates(null);
+                    Thread.Sleep(10_000);
+                }
+            });
         }
     }
 }

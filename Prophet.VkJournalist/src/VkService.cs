@@ -13,10 +13,10 @@ namespace Prophet.VkJournalist
     {
         readonly HttpClient client = new HttpClient();
 
-        public async Task<IEnumerable<Post>> WallGet(string ownerId, int count, int offset = 0)
+        public async Task<IEnumerable<Post>> WallGet(string apiKey, string ownerId, int count, int offset = 0)
         {
             var responseBody = await client.GetStringAsync(
-                $"https://api.vk.com/method/wall.get?owner_id={ownerId}&v=5.52&access_token=eff437ddeff437ddeff437dddbef9faed2eeff4eff437ddb2d1ece298491d125b8291d4&count={count}&offset={offset}"
+                $"https://api.vk.com/method/wall.get?owner_id={ownerId}&v=5.52&access_token={apiKey}&count={count}&offset={offset}"
             );
 
             var wallGetResponse = JsonSerializer.Deserialize<ApiResponse<WallGetResponse>>(
